@@ -25,24 +25,20 @@ function createSidebar() {
 function expandSidebar() {
   sidebar.classList.add('expanded');
   isExpanded = true;
-  updateContentMargin();
+  updateContentPosition();
   showAllTabs();
 }
 
 function collapseSidebar() {
   sidebar.classList.remove('expanded');
   isExpanded = false;
-  updateContentMargin();
+  updateContentPosition();
   showOnlyActiveTab();
 }
 
-function updateContentMargin() {
-  if (isExpanded) {
-    const sidebarWidth = sidebar.offsetWidth;
-    contentWrapper.style.marginLeft = `${sidebarWidth}px`;
-  } else {
-    contentWrapper.style.marginLeft = '30px'; // 默认宽度
-  }
+function updateContentPosition() {
+  const sidebarWidth = sidebar.offsetWidth;
+  contentWrapper.style.left = `${sidebarWidth}px`;
 }
 
 function showAllTabs() {
@@ -80,6 +76,15 @@ function updateSidebarContent(tabs) {
     favicon.className = 'favicon';
     faviconContainer.appendChild(favicon);
     
+    const closeButton = document.createElement('div');
+    closeButton.className = 'close-button';
+    closeButton.textContent = '❌'; // 使用 ❌ emoji 作为关闭图标
+    closeButton.addEventListener('click', (e) => {
+      e.stopPropagation(); // 防止触发标签切换
+      chrome.runtime.sendMessage({ action: "closeTab", tabId: tab.id });
+    });
+    faviconContainer.appendChild(closeButton);
+    
     const titleContainer = document.createElement('div');
     titleContainer.className = 'title-container';
     titleContainer.textContent = tab.title || 'Untitled Tab';
@@ -97,7 +102,7 @@ function updateSidebarContent(tabs) {
     sidebar.appendChild(tabElement);
   });
 
-  updateContentMargin();
+  updateContentPosition();
   if (!isExpanded) {
     showOnlyActiveTab();
   }

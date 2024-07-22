@@ -8,6 +8,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     updateAllTabs();
   } else if (request.action === "activateTab") {
     chrome.tabs.update(request.tabId, { active: true });
+  } else if (request.action === "closeTab") {
+    chrome.tabs.remove(request.tabId, () => {
+      console.log('Tab closed:', request.tabId);
+      readyTabs.delete(request.tabId);
+      updateAllTabs();
+    });
   }
 });
 
