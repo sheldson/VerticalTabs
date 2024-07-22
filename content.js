@@ -68,6 +68,15 @@ function updateSidebarContent(tabs) {
     tabElement.className = 'tab-item';
     tabElement.dataset.tabId = tab.id.toString();
     
+    const closeButton = document.createElement('div');
+    closeButton.className = 'close-button';
+    closeButton.textContent = 'X'; // 使用 'X' 作为关闭图标
+    closeButton.addEventListener('click', (e) => {
+      e.stopPropagation(); // 防止触发标签切换
+      chrome.runtime.sendMessage({ action: "closeTab", tabId: tab.id });
+    });
+    tabElement.appendChild(closeButton);
+
     const faviconContainer = document.createElement('div');
     faviconContainer.className = 'favicon-container';
     
@@ -75,15 +84,6 @@ function updateSidebarContent(tabs) {
     favicon.src = tab.favIconUrl || 'defaultIcon.png';
     favicon.className = 'favicon';
     faviconContainer.appendChild(favicon);
-    
-    const closeButton = document.createElement('div');
-    closeButton.className = 'close-button';
-    closeButton.textContent = '❌'; // 使用 ❌ emoji 作为关闭图标
-    closeButton.addEventListener('click', (e) => {
-      e.stopPropagation(); // 防止触发标签切换
-      chrome.runtime.sendMessage({ action: "closeTab", tabId: tab.id });
-    });
-    faviconContainer.appendChild(closeButton);
     
     const titleContainer = document.createElement('div');
     titleContainer.className = 'title-container';
