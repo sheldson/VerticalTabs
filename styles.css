@@ -68,6 +68,16 @@
 
 body {
   transition: margin-left 0.3s ease;
+  margin-left: 30px; /* 默认给出一个与侧边栏宽度相等的边距 */
+}
+
+#tab-content {
+  transition: margin-left 0.3s ease;
+}
+
+/* 隐藏非活动标签 */
+#tab-sidebar:not(.expanded) .tab-item:not(.active) {
+  display: none;
 }
 
 /* 自定义滚动条样式 */

@@ -1,6 +1,7 @@
 let sidebar;
 let contentWrapper;
 let isExpanded = false;
+let activeTabId = null;
 
 function createSidebar() {
   if (!sidebar) {
@@ -16,7 +17,6 @@ function createSidebar() {
     }
     document.body.appendChild(contentWrapper);
 
-    // 添加鼠标进入和离开事件
     sidebar.addEventListener('mouseenter', expandSidebar);
     sidebar.addEventListener('mouseleave', collapseSidebar);
   }
@@ -26,21 +26,39 @@ function expandSidebar() {
   sidebar.classList.add('expanded');
   isExpanded = true;
   updateContentMargin();
+  showAllTabs();
 }
 
 function collapseSidebar() {
   sidebar.classList.remove('expanded');
   isExpanded = false;
   updateContentMargin();
+  showOnlyActiveTab();
 }
 
 function updateContentMargin() {
   if (isExpanded) {
     const sidebarWidth = sidebar.offsetWidth;
-    document.body.style.marginLeft = `${sidebarWidth}px`;
+    contentWrapper.style.marginLeft = `${sidebarWidth}px`;
   } else {
-    document.body.style.marginLeft = '30px';
+    contentWrapper.style.marginLeft = '30px'; // 默认宽度
   }
+}
+
+function showAllTabs() {
+  const tabs = sidebar.querySelectorAll('.tab-item');
+  tabs.forEach(tab => tab.style.display = 'flex');
+}
+
+function showOnlyActiveTab() {
+  const tabs = sidebar.querySelectorAll('.tab-item');
+  tabs.forEach(tab => {
+    if (tab.dataset.tabId === activeTabId) {
+      tab.style.display = 'flex';
+    } else {
+      tab.style.display = 'none';
+    }
+  });
 }
 
 function updateSidebarContent(tabs) {
@@ -52,6 +70,7 @@ function updateSidebarContent(tabs) {
   tabs.forEach(tab => {
     const tabElement = document.createElement('div');
     tabElement.className = 'tab-item';
+    tabElement.dataset.tabId = tab.id.toString();
     
     const faviconContainer = document.createElement('div');
     faviconContainer.className = 'favicon-container';
@@ -70,6 +89,7 @@ function updateSidebarContent(tabs) {
     
     if (tab.active) {
       tabElement.classList.add('active');
+      activeTabId = tab.id.toString();
     }
     tabElement.addEventListener('click', () => {
       chrome.runtime.sendMessage({ action: "activateTab", tabId: tab.id });
@@ -78,6 +98,9 @@ function updateSidebarContent(tabs) {
   });
 
   updateContentMargin();
+  if (!isExpanded) {
+    showOnlyActiveTab();
+  }
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
