@@ -2,31 +2,37 @@
   position: fixed;
   left: 0;
   top: 0;
-  width: 200px;
   height: 100vh;
   background-color: #f0f0f0;
-  overflow-y: auto;
-  z-index: 2147483647;
+  z-index: 1000;
   box-shadow: 2px 0 5px rgba(0,0,0,0.1);
   font-family: Arial, sans-serif;
   font-size: 12px;
-  transition: transform 0.3s ease;
+  transition: width 0.3s ease;
   color: black !important;
-  transform: translateX(-180px);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  overflow-x: visible;
+  overflow-y: auto;
+  width: 30px; /* 默认宽度 */
 }
 
-#tab-sidebar:hover {
-  transform: translateX(0);
+#tab-sidebar.expanded {
+  width: auto; /* 展开时自动调整宽度 */
 }
 
 .tab-item {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px 2px;
+  width: 30px;
+  min-width: 30px;
+  height: 100%;
+  border-right: 1px solid #ddd;
   cursor: pointer;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: black !important;
+  transition: background-color 0.2s, width 0.3s ease;
 }
 
 .tab-item:hover {
@@ -35,14 +41,48 @@
 
 .tab-item.active {
   background-color: #d0d0d0;
-  font-weight: bold;
+}
+
+.favicon-container {
+  width: 16px;
+  height: 16px;
+  margin-bottom: 4px;
+}
+
+.favicon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.title-container {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: calc(100% - 24px);
+  transform: rotate(0deg);
+  transition: max-height 0.3s ease;
 }
 
 body {
-  margin-left: 20px !important;
   transition: margin-left 0.3s ease;
 }
 
-#tab-sidebar:hover + #tab-content {
-  margin-left: 200px;
+/* 自定义滚动条样式 */
+#tab-sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+#tab-sidebar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+#tab-sidebar::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+#tab-sidebar::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }

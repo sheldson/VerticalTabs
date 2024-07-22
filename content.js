@@ -1,25 +1,45 @@
 let sidebar;
 let contentWrapper;
+let isExpanded = false;
 
 function createSidebar() {
   if (!sidebar) {
-    // 创建侧边栏
     sidebar = document.createElement('div');
     sidebar.id = 'tab-sidebar';
     document.body.insertBefore(sidebar, document.body.firstChild);
 
-    // 创建内容包装器
     contentWrapper = document.createElement('div');
     contentWrapper.id = 'tab-content';
     
-    // 将所有现有内容移动到包装器中
     while (document.body.childNodes.length > 1) {
       contentWrapper.appendChild(document.body.childNodes[1]);
     }
     document.body.appendChild(contentWrapper);
 
-    // 添加初始内容以验证侧边栏是否正确创建
-    sidebar.innerHTML = '<div style="padding: 10px; color: black;">Sidebar Created</div>';
+    // 添加鼠标进入和离开事件
+    sidebar.addEventListener('mouseenter', expandSidebar);
+    sidebar.addEventListener('mouseleave', collapseSidebar);
+  }
+}
+
+function expandSidebar() {
+  sidebar.classList.add('expanded');
+  isExpanded = true;
+  updateContentMargin();
+}
+
+function collapseSidebar() {
+  sidebar.classList.remove('expanded');
+  isExpanded = false;
+  updateContentMargin();
+}
+
+function updateContentMargin() {
+  if (isExpanded) {
+    const sidebarWidth = sidebar.offsetWidth;
+    document.body.style.marginLeft = `${sidebarWidth}px`;
+  } else {
+    document.body.style.marginLeft = '30px';
   }
 }
 
@@ -32,8 +52,22 @@ function updateSidebarContent(tabs) {
   tabs.forEach(tab => {
     const tabElement = document.createElement('div');
     tabElement.className = 'tab-item';
-    tabElement.textContent = tab.title || 'Untitled Tab';
-    tabElement.title = tab.title || 'Untitled Tab';
+    
+    const faviconContainer = document.createElement('div');
+    faviconContainer.className = 'favicon-container';
+    
+    const favicon = document.createElement('img');
+    favicon.src = tab.favIconUrl || 'defaultIcon.png';
+    favicon.className = 'favicon';
+    faviconContainer.appendChild(favicon);
+    
+    const titleContainer = document.createElement('div');
+    titleContainer.className = 'title-container';
+    titleContainer.textContent = tab.title || 'Untitled Tab';
+    
+    tabElement.appendChild(faviconContainer);
+    tabElement.appendChild(titleContainer);
+    
     if (tab.active) {
       tabElement.classList.add('active');
     }
@@ -42,13 +76,8 @@ function updateSidebarContent(tabs) {
     });
     sidebar.appendChild(tabElement);
   });
-  
-  // 添加调试信息
-  const debugInfo = document.createElement('div');
-  debugInfo.style.padding = '10px';
-  debugInfo.style.color = 'black';
-  debugInfo.textContent = `Tabs loaded: ${tabs.length}`;
-  sidebar.appendChild(debugInfo);
+
+  updateContentMargin();
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -66,7 +95,6 @@ function notifyReady() {
 document.addEventListener('DOMContentLoaded', notifyReady);
 window.addEventListener('load', notifyReady);
 
-// 立即创建侧边栏和通知ready状态
 createSidebar();
 notifyReady();
 
