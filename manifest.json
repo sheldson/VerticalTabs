@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Tab Sidebar",
+  "name": "VerticalTabs",
   "version": "1.0",
   "description": "Displays tabs in a vertical sidebar on the left side of the browser",
   "permissions": ["tabs", "activeTab"],
