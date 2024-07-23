@@ -35,11 +35,7 @@ function showAllTabs() {
 function showOnlyActiveTab() {
   const tabs = sidebar.querySelectorAll('.tab-item');
   tabs.forEach(tab => {
-    if (tab.dataset.tabId === activeTabId) {
-      tab.style.display = 'flex';
-    } else {
-      tab.style.display = 'none';
-    }
+    tab.style.display = tab.dataset.tabId === activeTabId ? 'flex' : 'none';
   });
 }
 
@@ -61,8 +57,7 @@ function updateSidebarContent(tabs) {
       e.stopPropagation();
       chrome.runtime.sendMessage({ action: "closeTab", tabId: tab.id });
     });
-    tabElement.appendChild(closeButton);
-
+    
     const faviconContainer = document.createElement('div');
     faviconContainer.className = 'favicon-container';
     
@@ -75,6 +70,7 @@ function updateSidebarContent(tabs) {
     titleContainer.className = 'title-container';
     titleContainer.textContent = tab.title || 'Untitled Tab';
     
+    tabElement.appendChild(closeButton);
     tabElement.appendChild(faviconContainer);
     tabElement.appendChild(titleContainer);
     
@@ -90,6 +86,8 @@ function updateSidebarContent(tabs) {
 
   if (!isExpanded) {
     showOnlyActiveTab();
+  } else {
+    showAllTabs();
   }
   
   adjustSidebarPosition();
@@ -132,3 +130,10 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('load', notifyReady);
 
 console.log('Content script loaded and executed');
+
+document.addEventListener('DOMContentLoaded', () => {
+  notifyReady();
+  initializeSidebar();
+});
+
+window.addEventListener('load', notifyReady);
