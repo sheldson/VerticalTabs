@@ -1,5 +1,4 @@
 let sidebar;
-let contentWrapper;
 let isExpanded = false;
 let activeTabId = null;
 
@@ -7,38 +6,25 @@ function createSidebar() {
   if (!sidebar) {
     sidebar = document.createElement('div');
     sidebar.id = 'tab-sidebar';
-    document.body.insertBefore(sidebar, document.body.firstChild);
-
-    contentWrapper = document.createElement('div');
-    contentWrapper.id = 'tab-content';
-    
-    while (document.body.childNodes.length > 1) {
-      contentWrapper.appendChild(document.body.childNodes[1]);
-    }
-    document.body.appendChild(contentWrapper);
+    document.body.appendChild(sidebar);
 
     sidebar.addEventListener('mouseenter', expandSidebar);
     sidebar.addEventListener('mouseleave', collapseSidebar);
+
+    adjustSidebarPosition();
   }
 }
 
 function expandSidebar() {
   sidebar.classList.add('expanded');
   isExpanded = true;
-  updateContentPosition();
   showAllTabs();
 }
 
 function collapseSidebar() {
   sidebar.classList.remove('expanded');
   isExpanded = false;
-  updateContentPosition();
   showOnlyActiveTab();
-}
-
-function updateContentPosition() {
-  const sidebarWidth = sidebar.offsetWidth;
-  contentWrapper.style.left = `${sidebarWidth}px`;
 }
 
 function showAllTabs() {
@@ -70,9 +56,9 @@ function updateSidebarContent(tabs) {
     
     const closeButton = document.createElement('div');
     closeButton.className = 'close-button';
-    closeButton.textContent = 'X'; // 使用 'X' 作为关闭图标
+    closeButton.textContent = 'X';
     closeButton.addEventListener('click', (e) => {
-      e.stopPropagation(); // 防止触发标签切换
+      e.stopPropagation();
       chrome.runtime.sendMessage({ action: "closeTab", tabId: tab.id });
     });
     tabElement.appendChild(closeButton);
@@ -102,9 +88,19 @@ function updateSidebarContent(tabs) {
     sidebar.appendChild(tabElement);
   });
 
-  updateContentPosition();
   if (!isExpanded) {
     showOnlyActiveTab();
+  }
+  
+  adjustSidebarPosition();
+}
+
+function adjustSidebarPosition() {
+  const header = document.querySelector('#masthead-container');
+  if (header && sidebar) {
+    const headerHeight = header.offsetHeight;
+    sidebar.style.top = `${headerHeight}px`;
+    sidebar.style.height = `calc(100vh - ${headerHeight}px)`;
   }
 }
 
@@ -120,10 +116,19 @@ function notifyReady() {
   chrome.runtime.sendMessage({ action: "contentScriptReady" });
 }
 
-document.addEventListener('DOMContentLoaded', notifyReady);
-window.addEventListener('load', notifyReady);
+function initializeSidebar() {
+  createSidebar();
+  const resizeObserver = new ResizeObserver(() => {
+    adjustSidebarPosition();
+  });
+  resizeObserver.observe(document.body);
+}
 
-createSidebar();
-notifyReady();
+document.addEventListener('DOMContentLoaded', () => {
+  notifyReady();
+  initializeSidebar();
+});
+
+window.addEventListener('load', notifyReady);
 
 console.log('Content script loaded and executed');

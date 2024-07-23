@@ -9,23 +9,24 @@ body {
   left: 0;
   top: 0;
   height: 100vh;
-  background-color: #202124; /* 更新为深色背景 */
-  z-index: 1000;
+  background-color: #202124;
+  z-index: 2147483647;
   box-shadow: 2px 0 5px rgba(0,0,0,0.1);
   font-family: Arial, sans-serif;
   font-size: 12px;
-  transition: width 0.3s ease;
-  color: #ffffff !important; /* 更新为白色文字 */
+  transition: with 0.3s ease;
+  color: #ffffff !important;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  overflow-x: visible;
-  overflow-y: auto;
-  width: 30px; /* 默认宽度 */
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 30px;
 }
 
 #tab-sidebar.expanded {
   width: auto; /* 展开时自动调整宽度 */
+  max-width: 200px; /* 设置最大宽度，防止过宽 */
 }
 
 .tab-item {
@@ -37,9 +38,8 @@ body {
   width: 30px;
   min-width: 30px;
   height: 100%;
-  border-right: 1px solid #3c4043; /* 更新边框颜色 */
+  border-right: 1px solid #3c4043;
   cursor: pointer;
-  transition: background-color 0.2s, width 0.3s ease;
 }
 
 .tab-item:hover {
@@ -50,12 +50,17 @@ body {
   background-color: #3c4043; /* 更新活动标签背景色 */
 }
 
+
 .favicon-container {
   width: 16px;
   height: 16px;
   margin-bottom: 4px;
   position: relative;
 }
+
+
+
+
 
 .favicon {
   width: 100%;
@@ -78,6 +83,7 @@ body {
   cursor: pointer;
   font-size: 12px;
   font-weight: bold;
+  z-index: 1; /* 确保关闭按钮在图标上方 */
 }
 
 .close-button:hover {
@@ -86,14 +92,12 @@ body {
 
 .title-container {
   writing-mode: vertical-rl;
-  text-orientation: mixed;
+  text-orientation: mixed;  /* 改为 upright */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-height: calc(100% - 44px); /* 调整以适应关闭按钮 */
-  transform: rotate(0deg);
-  transition: max-height 0.3s ease;
-  color: #ffffff; /* 确保文字颜色为白色 */
+  max-height: calc(100% - 64px);
+  transform: rotate(0deg);  /* 添加这行 */
 }
 
 #tab-content {
@@ -104,10 +108,16 @@ body {
   transition: left 0.3s ease;
 }
 
+#tab-sidebar.expanded .tab-item {
+  width: 100%;
+}
+
 /* 隐藏非活动标签 */
 #tab-sidebar:not(.expanded) .tab-item:not(.active) {
   display: none;
 }
+
+
 
 /* 自定义滚动条样式 */
 #tab-sidebar::-webkit-scrollbar {
