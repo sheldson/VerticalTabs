@@ -14,6 +14,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       readyTabs.delete(request.tabId);
       updateAllTabs();
     });
+  } else if (request.action === "requestUpdate") {
+    updateAllTabs();
   }
 });
 
@@ -22,8 +24,9 @@ chrome.tabs.onCreated.addListener((tab) => {
   updateAllTabs();
 });
 
-chrome.tabs.onActivated.addListener((activeInfo) => {
-  console.log('Tab activated:', activeInfo.tabId);
+chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
+  console.log('Tab removed:', tabId);
+  readyTabs.delete(tabId);
   updateAllTabs();
 });
 
@@ -34,9 +37,8 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
 });
 
-chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
-  console.log('Tab removed:', tabId);
-  readyTabs.delete(tabId);
+chrome.tabs.onActivated.addListener((activeInfo) => {
+  console.log('Tab activated:', activeInfo.tabId);
   updateAllTabs();
 });
 

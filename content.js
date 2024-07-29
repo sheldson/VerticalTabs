@@ -155,7 +155,6 @@ function adjustSidebarPosition() {
     sidebar.style.height = `calc(100vh - ${headerHeight}px)`;
   }
 }
-
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log('Received message:', request);
   if (request.action === "updateTabs") {
@@ -170,9 +169,13 @@ function notifyReady() {
 
 function initializeSidebar() {
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', createSidebar);
+    document.addEventListener('DOMContentLoaded', () => {
+      createSidebar();
+      requestUpdate();
+    });
   } else {
     createSidebar();
+    requestUpdate();
   }
   const resizeObserver = new ResizeObserver(() => {
     adjustSidebarPosition();
@@ -180,11 +183,18 @@ function initializeSidebar() {
   resizeObserver.observe(document.body);
 }
 
+function requestUpdate() {
+  chrome.runtime.sendMessage({ action: "requestUpdate" });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   notifyReady();
   initializeSidebar();
 });
 
-window.addEventListener('load', notifyReady);
+window.addEventListener('load', () => {
+  notifyReady();
+  requestUpdate();
+});
 
 console.log('Content script loaded and executed');
