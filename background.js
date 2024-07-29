@@ -17,6 +17,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
+chrome.tabs.onCreated.addListener((tab) => {
+  console.log('New tab created:', tab.id);
+  updateAllTabs();
+});
+
 chrome.tabs.onActivated.addListener((activeInfo) => {
   console.log('Tab activated:', activeInfo.tabId);
   updateAllTabs();
