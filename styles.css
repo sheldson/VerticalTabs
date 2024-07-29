@@ -6,7 +6,7 @@ body {
 
 #tab-sidebar {
   position: fixed;
-  left: 0;
+  left: -30px; /* 初始状态下完全隐藏 */
   top: 0;
   height: 100vh;
   background-color: #202124;
@@ -14,7 +14,7 @@ body {
   box-shadow: 2px 0 5px rgba(0,0,0,0.1);
   font-family: Arial, sans-serif;
   font-size: 12px;
-  transition: with 0.3s ease;
+  transition: left 0.3s ease, width 0.3s ease;
   color: #ffffff !important;
   display: flex;
   flex-direction: row;
@@ -24,9 +24,13 @@ body {
   width: 30px;
 }
 
+#tab-sidebar.visible {
+  left: 0; /* 可见状态 */
+}
+
 #tab-sidebar.expanded {
-  width: auto; /* 展开时自动调整宽度 */
-  max-width: 400px; /* 设置最大宽度，防止过宽 */
+  width: auto;
+  max-width: 400px;
 }
 
 .tab-item {
@@ -34,7 +38,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px 2px 5px 2px; /* 增加顶部padding为关闭按钮留出空间 */
+  padding: 20px 2px 5px 2px;
   width: 30px;
   min-width: 30px;
   height: 100%;
@@ -43,13 +47,12 @@ body {
 }
 
 .tab-item:hover {
-  background-color: #3c4043; /* 更新悬停背景色 */
+  background-color: #3c4043;
 }
 
 .tab-item.active {
-  background-color: #3c4043; /* 更新活动标签背景色 */
+  background-color: #3c4043;
 }
-
 
 .favicon-container {
   width: 16px;
@@ -57,10 +60,6 @@ body {
   margin-bottom: 4px;
   position: relative;
 }
-
-
-
-
 
 .favicon {
   width: 100%;
@@ -74,7 +73,7 @@ body {
   left: 50%;
   transform: translateX(-50%);
   background-color: transparent;
-  color: #9aa0a6; /* 更新关闭按钮颜色 */
+  color: #9aa0a6;
   width: 16px;
   height: 16px;
   display: flex;
@@ -83,41 +82,34 @@ body {
   cursor: pointer;
   font-size: 12px;
   font-weight: bold;
-  z-index: 1; /* 确保关闭按钮在图标上方 */
+  z-index: 1;
 }
 
 .close-button:hover {
-  color: #ffffff; /* 更新关闭按钮悬停颜色 */
+  color: #ffffff;
 }
 
 .title-container {
   writing-mode: vertical-rl;
-  text-orientation: mixed;  /* 改为 upright */
+  text-orientation: mixed;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-height: calc(100% - 64px);
-  transform: rotate(0deg);  /* 添加这行 */
+  transform: rotate(0deg);
 }
 
 #tab-content {
   position: absolute;
-  left: 30px; /* 默认侧边栏宽度 */
+  left: 0; /* 默认不留空间给侧边栏 */
   top: 0;
   right: 0;
   transition: left 0.3s ease;
 }
 
-#tab-sidebar.expanded .tab-item {
-  width: 100%;
+#tab-content.sidebar-visible {
+  left: 30px; /* 当侧边栏可见时，为其留出空间 */
 }
-
-/* 隐藏非活动标签 */
-#tab-sidebar:not(.expanded) .tab-item:not(.active) {
-  display: none;
-}
-
-
 
 /* 自定义滚动条样式 */
 #tab-sidebar::-webkit-scrollbar {
@@ -125,13 +117,13 @@ body {
 }
 
 #tab-sidebar::-webkit-scrollbar-track {
-  background: #202124; /* 更新滚动条轨道颜色 */
+  background: #202124;
 }
 
 #tab-sidebar::-webkit-scrollbar-thumb {
-  background: #5f6368; /* 更新滚动条滑块颜色 */
+  background: #5f6368;
 }
 
 #tab-sidebar::-webkit-scrollbar-thumb:hover {
-  background: #7d8085; /* 更新滚动条滑块悬停颜色 */
+  background: #7d8085;
 }
