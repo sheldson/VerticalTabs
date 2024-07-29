@@ -3,7 +3,14 @@
   "name": "VerticalTabs",
   "version": "1.1",
   "description": "Displays tabs in a vertical sidebar on the left side of the browser",
-  "permissions": ["tabs", "activeTab"],
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
   "background": {
     "service_worker": "background.js"
   },

@@ -50,7 +50,10 @@ function updateAllTabs() {
         if (chrome.runtime.lastError) {
           console.log(`Error sending message to tab ${tab.id}: ${chrome.runtime.lastError.message}`);
           // 如果发送消息失败，尝试重新注入content script
-          chrome.tabs.executeScript(tab.id, { file: 'content.js' }, () => {
+          chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            files: ['content.js']
+          }, () => {
             if (chrome.runtime.lastError) {
               console.log(`Failed to inject content script into tab ${tab.id}: ${chrome.runtime.lastError.message}`);
             } else {
