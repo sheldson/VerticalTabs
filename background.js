@@ -46,13 +46,22 @@ function updateAllTabs() {
   chrome.tabs.query({}, (tabs) => {
     console.log('Updating all tabs. Ready tabs:', Array.from(readyTabs));
     tabs.forEach(tab => {
-      if (readyTabs.has(tab.id)) {
-        console.log('Sending update to tab:', tab.id);
-        chrome.tabs.sendMessage(tab.id, { action: "updateTabs", tabs: tabs }).catch(error => {
-          console.log(`Error sending message to tab ${tab.id}: ${error}`);
-          readyTabs.delete(tab.id);
-        });
-      }
+      chrome.tabs.sendMessage(tab.id, { action: "updateTabs", tabs: tabs }, (response) => {
+        if (chrome.runtime.lastError) {
+          console.log(`Error sending message to tab ${tab.id}: ${chrome.runtime.lastError.message}`);
+          // 如果发送消息失败，尝试重新注入content script
+          chrome.tabs.executeScript(tab.id, { file: 'content.js' }, () => {
+            if (chrome.runtime.lastError) {
+              console.log(`Failed to inject content script into tab ${tab.id}: ${chrome.runtime.lastError.message}`);
+            } else {
+              console.log(`Re-injected content script into tab ${tab.id}`);
+              readyTabs.add(tab.id);
+            }
+          });
+        } else {
+          readyTabs.add(tab.id);
+        }
+      });
     });
   });
 }

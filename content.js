@@ -148,18 +148,26 @@ function updateSidebarContent(tabs) {
 }
 
 function adjustSidebarPosition() {
+  if (!sidebar) return;
+
   const header = document.querySelector('#masthead-container');
-  if (header && sidebar) {
+  if (header) {
     const headerHeight = header.offsetHeight;
     sidebar.style.top = `${headerHeight}px`;
     sidebar.style.height = `calc(100vh - ${headerHeight}px)`;
+  } else {
+    sidebar.style.top = '0';
+    sidebar.style.height = '100vh';
   }
 }
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log('Received message:', request);
   if (request.action === "updateTabs") {
     updateSidebarContent(request.tabs);
+    sendResponse({status: "updated"});  // 发送响应
   }
+  return true;  // 表示会异步发送响应
 });
 
 function notifyReady() {
@@ -168,15 +176,9 @@ function notifyReady() {
 }
 
 function initializeSidebar() {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      createSidebar();
-      requestUpdate();
-    });
-  } else {
-    createSidebar();
-    requestUpdate();
-  }
+  createSidebar();
+  requestUpdate();
+  
   const resizeObserver = new ResizeObserver(() => {
     adjustSidebarPosition();
   });
@@ -187,14 +189,21 @@ function requestUpdate() {
   chrome.runtime.sendMessage({ action: "requestUpdate" });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+// 确保在 DOM 加载完成后初始化侧边栏
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    notifyReady();
+    initializeSidebar();
+  });
+} else {
   notifyReady();
   initializeSidebar();
-});
+}
 
-window.addEventListener('load', () => {
-  notifyReady();
-  requestUpdate();
-});
+// 在页面完全加载后再次请求更新，以确保获取最新数据
+window.addEventListener('load', requestUpdate);
+
+// 定期请求更新，以防长时间未活动
+setInterval(requestUpdate, 60000);  // 每分钟请求一次更新
 
 console.log('Content script loaded and executed');
